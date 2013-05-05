@@ -9,5 +9,5 @@ This is done by:
   2. Reversing the characters in the subtitle file since usually when the TV doesn't support LTR the subtitles are rendered reversed on the screen.
   
 * This plugin was tested with LG 47LM7600
-
+* Currently only Hebrew is supported
 

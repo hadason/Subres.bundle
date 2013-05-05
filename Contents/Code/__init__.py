@@ -14,11 +14,12 @@ def updatePartsSub(parts):
                 Log('No subtitle file found')
                 continue
             Log('Found subtitle file: ' + sub_path)
-            if (False == ltrsubs.is_hebrew_encoding(sub_path)):
+            encoding = ltrsubs.get_hebrew_encoding(sub_path)
+            if (None == encoding):
                 Log('Subtitle file does not seem to be in hebrew, skipping file.')
                 continue
-            Log('Subtitle seems to be in hebrew, processing subtitle file.')
-            subData = ltrsubs.writeHebSubs(sub_path)
+            Log('Subtitle seems to be in hebrew (' + encoding + '), processing subtitle file.')
+            subData = ltrsubs.writeHebSubs(sub_path, encoding)
             processedSub = Proxy.Media(subData, codec = 'srt', format='srt')
             part.subtitles[Locale.Language.Hebrew][sub_path] = processedSub
         except Exception as e:

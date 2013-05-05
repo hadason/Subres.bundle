@@ -20,7 +20,7 @@ def reverseGroup(match, groupName):
                 line += group
         return line
 
-def writeHebSubs(inputFile):
+def writeHebSubs(inputFile, encoding):
     input = os.fdopen(os.open(inputFile, os.O_RDONLY))
     lines = input.readlines()
     state = LineStatus.LINE_NUMBER
@@ -41,16 +41,37 @@ def writeHebSubs(inputFile):
         line = re.sub(r'(?P<nums>[0-9]+)(.*[à-ú])+', lambda match: reverseGroup(match, 'nums'), line)
         result += line
     input.close()
-    return codecs.BOM_UTF8 + result.decode('iso-8859-8').encode('utf-8')
+    return codecs.BOM_UTF8 + result.decode(encoding).encode('utf-8')
     
-def is_hebrew_encoding(inputFile):
+def is_encoding(lines, encoding):
+    for line in lines:
+        try:
+            #bytes(line, encoding)
+            line.decode(encoding)
+        #except UnicodeEncodeError as e:
+        except UnicodeDecodeError as e:
+            return False
+    return True
+
+def searchRegex(lines, regex):
+    for line in lines:
+        if (regex.match(line)):
+            return True
+    return False       
+
+def get_encoding(lines, encodings):
+    for encoding in encodings:
+        if (is_encoding(lines, encoding)):
+            return encoding
+    return None
+    
+def get_hebrew_encoding(inputFile):
+    hebrewRegex = re.compile('.*[à-ú]{3,}.*', re.DOTALL | re.MULTILINE)
     with os.fdopen(os.open(inputFile, os.O_RDONLY)) as input:
         lines = input.readlines()
-        for line in lines:
-            try:
-                #bytes(line, encoding='iso-8859-8')
-                line.decode('iso-8859-8')
-            #except UnicodeEncodeError as e:
-            except UnicodeDecodeError as e:
-                return False
-        return True
+        encoding = get_encoding(lines, ['iso-8859-8', 'cp862', 'windows-1255'])
+        if (encoding is None):
+            return None
+        if (False == searchRegex(lines, hebrewRegex)):
+            return None
+        return encoding

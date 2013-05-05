@@ -42,3 +42,15 @@ def writeHebSubs(inputFile):
         result += line
     input.close()
     return codecs.BOM_UTF8 + result.decode('iso-8859-8').encode('utf-8')
+    
+def is_hebrew_encoding(inputFile):
+    with os.fdopen(os.open(inputFile, os.O_RDONLY)) as input:
+        lines = input.readlines()
+        for line in lines:
+            try:
+                #bytes(line, encoding='iso-8859-8')
+                line.decode('iso-8859-8')
+            #except UnicodeEncodeError as e:
+            except UnicodeDecodeError as e:
+                return False
+        return True

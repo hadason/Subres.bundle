@@ -5,6 +5,25 @@ import ltrsubs, os, string, hashlib, base64, re, plistlib, unicodedata
 def Start():
     Log('Subres - start() called')
 
+def updatePartsSub(parts):
+    for part in parts:
+        try:
+            file_path = os.path.splitext(part.file)[0]
+            sub_path = file_path + '.srt'
+            if (False == os.path.exists(sub_path)):
+                Log('No subtitle file found')
+                continue
+            Log('Found subtitle file: ' + sub_path)
+            if (False == ltrsubs.is_hebrew_encoding(sub_path)):
+                Log('Subtitle file does not seem to be in hebrew, skipping file.')
+                continue
+            Log('Subtitle seems to be in hebrew, processing subtitle file.')
+            subData = ltrsubs.writeHebSubs(sub_path)
+            processedSub = Proxy.Media(subData, codec = 'srt', format='srt')
+            part.subtitles[Locale.Language.Hebrew][sub_path] = processedSub
+        except Exception as e:
+            Log('Error: ' + str(e))
+    
 class SubresAgentMovies(Agent.Movies):
   name = 'Subres_Movies'
   languages = [Locale.Language.English]
@@ -19,21 +38,7 @@ class SubresAgentMovies(Agent.Movies):
     Log('Subres (Movies) - update() called')
     Log('Metadata.title: %s, media.title: %s', metadata.title, media.title)
     for i in media.items:
-      for part in i.parts:
-        try:
-            file_path = os.path.splitext(part.file)[0]
-            Log('filename without ext: %s', file_path)
-            sub_path = file_path + '.srt'
-            if (os.path.exists(sub_path) == True):
-                Log('Subtitle file exists')
-                subData = ltrsubs.writeHebSubs(sub_path)
-                part.subtitles[Locale.Language.Hebrew][sub_path] = Proxy.Media(subData, codec = 'srt', format='srt')
-            else:
-                Log('Subtitle file doesnt exist')
-                Log(dir(Proxy))
-        except Exception as e:
-            Log('Error: ' + e)
-
+      updatePartsSub(i.parts)   
             
 class SubresSubtitlesAgentTV(Agent.TV_Shows):
   name = 'Subres_TV'
@@ -55,18 +60,4 @@ class SubresSubtitlesAgentTV(Agent.TV_Shows):
       # prefers date-based (why?)
       for e in media.seasons[s].episodes:
         for i in media.seasons[s].episodes[e].items:
-            # Look for subtitles.
-            for part in i.parts:
-              try:
-                  file_path = os.path.splitext(part.file)[0]
-                  Log('filename without ext: %s', file_path)
-                  sub_path = file_path + '.srt'
-                  if (os.path.exists(sub_path) == True):
-                    Log('Subtitle file exists')
-                    subData = ltrsubs.writeHebSubs(sub_path)
-                    part.subtitles[Locale.Language.Hebrew][sub_path] = Proxy.Media(subData, codec = 'srt', format='srt')
-                  else:
-                    Log('Subtitle file doesnt exist')
-                    Log(dir(Proxy))
-              except:
-                  Log('Error')
+            updatePartsSub(i.parts)

@@ -11,3 +11,14 @@ This is done by:
 * This plugin was tested with LG 47LM7600
 * Currently only Hebrew is supported
 
+Installation Instructions
+-------------------------
+1. Copy the plugin (Subres.bundle) to the Plex Plugin directory (Windows 7: C:\Users\%Username%\AppData\Local\Plex Media Server\Plug-ins).
+  1.2. Make sure to create a folder with the full name of the plugin: Subres.bundle
+2. In Plex, under Settings --> Plex Media Server --> Agents, make sure that Subres is checked for each type of show (TV / Movies) and that it is first in the list of preference.
+3. Restart Plex Server.
+
+Troubleshooting
+---------------
+* Subres creates a log file in the following location: 
+  * Windows 7: C:\Users\%Username%\AppData\Local\Plex Media Server\Logs\PMS Plugin Logs

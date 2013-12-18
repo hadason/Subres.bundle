@@ -23,3 +23,5 @@ Troubleshooting
 ---------------
 * Subres creates a log file in the following location: 
   * Windows 7: `C:\Users\%Username%\AppData\Local\Plex Media Server\Logs\PMS Plugin Logs`
+* In some cases it is required to unmatch the metadata of the show after installing Subres in order for it to work
+  * If you try to refresh the show and nothing is showing in the log file, go to the show and click on the "Unmatch" option. (in TV Shows it will be under the show itself and not under the episode)
